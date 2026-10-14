@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Divano Elite | Catalogue</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600&family=Cormorant+Garamond:wght@500;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --green: #7aa35a;
+      --green-dark: #4f7a34;
+      --red: #8c2a2a;
+      --forest: #1f3a32;
+      --gold: #c9a96e;
+      --paper: #ffffff;
+      --ink: #2b2b28;
+      --muted: #777772;
+      --line: #d9d6cf;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      font-family: "Inter", system-ui, sans-serif; color: var(--ink);
+      background: radial-gradient(ellipse at 50% 40%, #fdfcfa 0%, #e8e6e2 60%, #cfcbc4 100%);
+      display: flex; flex-direction: column; overflow: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+    img { display: block; }
+
+    .topbar { height: 6px; background: var(--red); flex: 0 0 auto; }
+    .stage { flex: 1; position: relative; display: flex; align-items: center; justify-content: center; min-height: 0; padding: 16px 60px; }
+    #book { box-shadow: 0 25px 50px rgba(0,0,0,.18); }
+    .nav-arrow {
+      position: absolute; top: 50%; transform: translateY(-50%); background: none; border: 0;
+      width: 48px; height: 80px; cursor: pointer; z-index: 10;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .nav-arrow::before { content: ""; width: 16px; height: 16px; border-top: 2px solid #8a8a84; border-right: 2px solid #8a8a84; }
+    .nav-arrow.prev { left: 6px; } .nav-arrow.prev::before { transform: rotate(-135deg); margin-left: 6px; }
+    .nav-arrow.next { right: 6px; } .nav-arrow.next::before { transform: rotate(45deg); margin-right: 6px; }
+    .nav-arrow:disabled { opacity: .3; cursor: default; }
+
+    /* ---------- Shared page pieces ---------- */
+    .page { background: var(--paper); overflow: hidden; }
+    .pi { width: 100%; height: 100%; position: relative; display: flex; flex-direction: column; }
+    .pno { position: absolute; bottom: 10px; font-size: .68rem; color: var(--muted); letter-spacing: 1px; }
+    .pno.l { left: 20px; } .pno.r { right: 20px; }
+    .cart {
+      position: absolute; right: 6px; bottom: 6px; width: 30px; height: 30px; border-radius: 50%;
+      background: var(--green); color: #fff; display: flex; align-items: center; justify-content: center;
+      font-size: .8rem; box-shadow: 0 3px 8px rgba(0,0,0,.15);
+    }
+    .cart:hover { background: var(--green-dark); }
+
+    /* 1. Cover */
+    .cover .pi { color: #fff; }
+    .cover .photo { position: absolute; inset: 0; background: #8b7d6b; }
+    .cover .photo img { width: 100%; height: 100%; object-fit: cover; }
+    .cover .shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,.05) 35%, rgba(0,0,0,.45) 100%); }
+    .cover .date { position: absolute; top: 34px; left: 34px; background: rgba(255,255,255,.85); color: #444; font-size: .66rem; letter-spacing: 3px; padding: 4px 12px; font-family: "Oswald", sans-serif; }
+    .cover .text { position: absolute; top: 90px; left: 34px; right: 30px; }
+    .cover .living { font-family: "Oswald", sans-serif; letter-spacing: 8px; color: rgba(255,255,255,.7); font-size: .95rem; }
+    .cover h1 { font-family: "Cormorant Garamond", serif; font-weight: 500; font-size: 3.2rem; line-height: 1; margin-top: 10px; color: #fff; }
+    .cover .rule { width: 80%; height: 1px; background: rgba(255,255,255,.6); margin: 12px 0 10px; }
+    .cover .lead { font-size: .66rem; line-height: 1.5; max-width: 260px; opacity: .92; }
+    .cover .bubbles { position: absolute; bottom: 30px; left: 34px; display: flex; gap: 8px; }
+    .cover .bubbles span { width: 38px; height: 38px; border-radius: 50%; border: 2px solid #fff; background-size: cover; background-position: center; background-color: #bfb3a2; }
+
+    /* 2. Index (BON BON) */
+    .index .head { height: 62px; display: flex; align-items: center; padding: 0 28px; gap: 20px; }
+    .index .brand { font-family: "Cormorant Garamond", serif; font-size: 1.6rem; color: #666; letter-spacing: 1px; min-width: 150px; }
+    .index .rule { flex: 1; height: 2px; background: #888; }
+    .index .cols { flex: 1; display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+    .index .col { position: relative; overflow: hidden; color: #fff; background: #b9b1a4; }
+    .index .col img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; }
+    .index .col .shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0) 40%, rgba(0,0,0,.45) 100%); }
+    .index .num { position: absolute; top: 14px; left: 18px; font-family: "Oswald", sans-serif; font-size: 2.1rem; z-index: 2; }
+    .index .txt { position: absolute; bottom: 18px; left: 18px; right: 14px; z-index: 2; }
+    .index .txt h3 { font-family: "Oswald", sans-serif; font-weight: 400; font-size: 1.5rem; text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,.7); padding-bottom: 6px; margin-bottom: 8px; }
+    .index .txt p { font-size: .55rem; line-height: 1.5; letter-spacing: .3px; text-transform: uppercase; opacity: .95; }
+
+    /* 3. Sofa page */
+    .sofa .pi { flex-direction: row; }
+    .sofa .left { width: 38%; padding: 30px 26px; background: #fff; }
+    .sofa .top { text-align: center; }
+    .sofa .dots { display: flex; justify-content: center; gap: 10px; margin-bottom: 6px; }
+    .sofa .dots i { width: 7px; height: 7px; border: 1px solid #999; border-radius: 50%; display: block; }
+    .sofa h2 { font-family: "Oswald", sans-serif; font-weight: 400; color: var(--green); font-size: 2.4rem; text-transform: uppercase; }
+    .sofa .item { margin-top: 26px; padding-bottom: 14px; border-bottom: 1px solid var(--red); position: relative; }
+    .sofa .item .name { font-family: "Oswald", sans-serif; font-size: 1.1rem; color: #7d7d78; text-transform: uppercase; }
+    .sofa .item .name b { font-weight: 400; margin-right: 8px; }
+    .sofa .item .box { background: #f2f2f0; font-size: .65rem; color: #555; line-height: 1.5; padding: 8px 10px; margin: 12px 0 24px; }
+    .sofa .item .cart { position: relative; right: auto; bottom: auto; float: right; margin: -8px 0 2px; }
+    .sofa .right { flex: 1; position: relative; background: #bfb8ad; }
+    .sofa .right img { width: 100%; height: 100%; object-fit: cover; }
+    .hot {
+      position: absolute; width: 34px; height: 34px; border-radius: 50%; background: rgba(255,255,255,.45);
+      color: #fff; font-family: "Oswald", sans-serif; font-size: .8rem; display: flex; align-items: center; justify-content: center;
+      transform: translate(-50%, -50%); backdrop-filter: blur(2px);
+    }
+
+    /* 4. Chair page (grid + feature) */
+    .chair .pi { flex-direction: row; }
+    .chair .left { width: 44%; padding: 30px 26px 24px; display: flex; flex-direction: column; }
+    .chair .head { text-align: center; }
+    .chair h2 { font-family: "Oswald", sans-serif; font-weight: 400; font-size: 2.4rem; color: #5d5d58; text-transform: uppercase; }
+    .chair .sub { color: var(--green); letter-spacing: 6px; font-size: .75rem; margin-top: 2px; font-family: "Oswald", sans-serif; }
+    .chair .intro { font-size: .62rem; color: #666; line-height: 1.5; margin: 8px auto 0; max-width: 220px; }
+    .chair .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 12px; margin-top: 18px; }
+    .chair .it { text-align: center; position: relative; }
+    .chair .it .pic { position: relative; height: 112px; background: #fff; }
+    .chair .it .pic img { width: 100%; height: 100%; object-fit: contain; }
+    .chair .it .n { font-family: "Oswald", sans-serif; font-size: .75rem; color: #6d6d68; text-transform: uppercase; margin-top: 4px; }
+    .chair .it .cart { right: 0; bottom: 22px; }
+    .chair .right { flex: 1; display: flex; flex-direction: column; }
+    .chair .hero { height: 46%; background: #d8cfc2; }
+    .chair .hero img { width: 100%; height: 100%; object-fit: cover; }
+    .chair .below { flex: 1; padding: 22px 26px; }
+    .chair .tag { display: inline-block; background: var(--green); color: #fff; font-family: "Oswald", sans-serif; font-size: .62rem; letter-spacing: 1.2px; padding: 3px 8px; text-transform: uppercase; }
+    .chair .below h3 { font-family: "Oswald", sans-serif; font-weight: 400; font-size: 1.4rem; color: #5b5b56; text-transform: uppercase; margin: 10px 0 8px; }
+    .chair .below p { font-size: .66rem; line-height: 1.7; color: #666; }
+    .chair .label { font-family: "Oswald", sans-serif; color: #888; font-size: .78rem; letter-spacing: 1px; margin: 14px 0 4px; }
+    .chair .mat { font-size: .66rem; color: #666; line-height: 1.6; }
+    .shop-btn { display: inline-block; margin-top: 14px; background: var(--forest); color: #fff; padding: 8px 16px; border-radius: 999px; font-size: .66rem; }
+
+    /* 5 & 7. Product split pages (left column) */
+    .split .pi { padding: 34px 40px 30px; }
+    .split .ttl { text-align: center; font-family: "Oswald", sans-serif; font-weight: 400; font-size: 2.3rem; color: #8a8a84; text-transform: uppercase; }
+    .split .ttl-rule { height: 1px; background: #888; margin: 14px 0 18px; }
+    .prod { display: flex; gap: 14px; padding-bottom: 14px; margin-bottom: 14px; border-bottom: 1px solid var(--red); flex: 1; min-height: 0; }
+    .prod .pic { width: 46%; background: #ececea; }
+    .prod .pic img { width: 100%; height: 100%; object-fit: cover; }
+    .prod .info { flex: 1; display: flex; flex-direction: column; }
+    .prod .bar { background: var(--green); color: #fff; font-family: "Oswald", sans-serif; text-transform: uppercase; text-align: center; font-size: 1.1rem; padding: 4px 0; letter-spacing: 1px; }
+    .prod .lbl { font-family: "Oswald", sans-serif; color: var(--green); font-size: .72rem; letter-spacing: 1.5px; text-transform: uppercase; margin-top: 12px; }
+    .prod .val { font-size: .66rem; color: #444; margin-top: 2px; letter-spacing: .5px; }
+    .prod ul { list-style: none; margin-top: 2px; }
+    .prod li { font-size: .6rem; color: #444; background: #f3f3f1; padding: 2px 8px 2px 16px; margin-top: 3px; position: relative; }
+    .prod li::before { content: ""; position: absolute; left: 6px; top: 50%; transform: translateY(-50%); width: 5px; height: 5px; border-radius: 50%; background: var(--red); }
+    .swatches { display: flex; gap: 6px; margin-top: 4px; }
+    .swatches i { width: 14px; height: 14px; border-radius: 2px; display: block; }
+    .prod .view { margin-top: auto; font-size: .6rem; color: var(--forest); font-weight: 500; padding-top: 8px; }
+
+    /* 6 & 8. Gallery pages (right column) */
+    .gallery .pi { padding: 34px 40px 30px; }
+    .gallery .ttl { text-align: center; font-family: "Oswald", sans-serif; font-weight: 400; font-size: 2.3rem; color: #8a8a84; text-transform: uppercase; }
+    .gallery .intro { text-align: center; font-size: .66rem; color: #666; margin-top: 8px; }
+    .gallery .feature { position: relative; height: 40%; margin-top: 18px; overflow: hidden; background: #cfc8bb; display: block; }
+    .gallery .feature img { width: 100%; height: 100%; object-fit: cover; }
+    .gallery .cap { position: absolute; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,.82); padding: 10px 14px; }
+    .gallery .cap h4 { font-family: "Oswald", sans-serif; font-weight: 400; font-size: 1.25rem; text-transform: uppercase; color: #333; }
+    .gallery .cap p { font-size: .58rem; line-height: 1.5; color: #555; margin-top: 2px; }
+    .gallery .row { display: flex; justify-content: space-between; gap: 12px; margin-top: auto; padding-top: 24px; }
+    .gallery .sm { flex: 1; text-align: center; }
+    .gallery .sm .pic { height: 150px; display: flex; align-items: flex-end; justify-content: center; }
+    .gallery .sm .pic img { max-width: 100%; max-height: 100%; object-fit: contain; }
+    .gallery .sm .under { background: #f0f0ee; height: 10px; margin: 4px 0 6px; }
+    .gallery .sm h5 { font-family: "Oswald", sans-serif; font-weight: 400; font-size: .85rem; color: var(--green); text-transform: uppercase; letter-spacing: .5px; }
+    .gallery .sm .dim { font-size: .58rem; color: #666; margin: 2px 0 4px; }
+    .gallery .sm p { font-size: .56rem; line-height: 1.5; color: #555; }
+
+    /* Back cover */
+    .back .pi { background: var(--forest); color: #fff; align-items: center; justify-content: center; text-align: center; padding: 40px; }
+    .back h2 { font-family: "Cormorant Garamond", serif; font-size: 2.6rem; color: var(--gold); margin-bottom: 14px; font-weight: 500; }
+    .back p { font-size: .85rem; opacity: .8; margin-bottom: 24px; max-width: 280px; }
+    .back .btn { background: var(--gold); color: var(--forest); padding: 12px 26px; border-radius: 999px; font-weight: 600; font-size: .8rem; }
+
+    /* ---------- Controls ---------- */
+    .controls { flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 6px 0 14px; }
+    .counter { font-size: .78rem; color: var(--muted); letter-spacing: 1px; }
+    .dots { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; padding: 0 16px; }
+    .dot { width: 9px; height: 9px; border-radius: 50%; border: 0; background: #bcb8b0; cursor: pointer; padding: 0; }
+    .dot.active { background: var(--green); transform: scale(1.25); }
+
+    @media (max-width: 700px) {
+      .stage { padding: 8px 4px; }
+      .nav-arrow { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="topbar"></div>
+
+<div class="stage">
+  <button class="nav-arrow prev" id="prevBtn" aria-label="Previous page"></button>
+  <div id="book"></div>
+  <button class="nav-arrow next" id="nextBtn" aria-label="Next page"></button>
+</div>
+
+<div class="controls">
+  <div class="counter" id="counter"></div>
+  <div class="dots" id="dots"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.js"></script>
+
+<script>
+  /* =====================================================================
+     CATALOGUE CONTENT
+     Edit this section for each launch. Every "img" path is a file you
+     crop from your product photos and place in the "images" folder.
+     Every "url" is the Shopify product page for that item.
+     ===================================================================== */
+
+  const SHOP = "https://divanoelite.com/products/";
+
+  const catalogue = {
+    cover: {
+      date: "DEC 2024",
+      room: "Living Room",
+      title: "Divano Elite",
+      lead: "Explore endless possibilities and discover your own unique home artistry within the catalogue, embarking on a new chapter of exquisite living!",
+      img: "images/cover/living-room.jpg",
+      bubbles: ["images/cover/thumb-1.jpg", "images/cover/thumb-2.jpg", "images/cover/thumb-3.jpg"]
+    },
+
+    index: {
+      brand: "BON BON",
+      cols: [
+        { num: "01", title: "NEWIN", img: "images/index/newin.jpg",
+          text: "Explore the latest additions to our living room furniture collection, featuring innovative designs and modern styles." },
+        { num: "02", title: "CHAIR", img: "images/index/chair.jpg",
+          text: "Sink into luxury with our lounge chairs, designed for relaxation and style, making every moment a retreat from the world." },
+        { num: "03", title: "SOFA", img: "images/index/sofa.jpg",
+          text: "Indulge in our sofa collection, featuring designs that hug you in comfort, while adding sophistication to any living space." },
+        { num: "04", title: "TABLE", img: "images/index/table.jpg",
+          text: "Perfect accents for every corner. Our side tables blend style with function, enhancing the ambience of your room." }
+      ]
+    },
+
+    sofa: {
+      title: "Sofa",
+      photo: "images/sofa/sofa-scene.jpg",
+      hotspots: [
+        { n: "01", x: 73, y: 44 },
+        { n: "02", x: 38, y: 51 },
+        { n: "03", x: 61, y: 74 }
+      ],
+      items: [
+        { n: "01", name: "Kyoto Modern Sofa", desc: "Luxurious sofa featuring an internal coffee table for added convenience and style", url: SHOP + "kyoto-modern-sofa" },
+        { n: "02", name: "Hector Coffee Table", desc: "Fusion of modern aesthetics and functional design. It redefines contemporary living with its brushed metal legs and two wooden surfaces.", url: SHOP + "hector-coffee-table" },
+        { n: "03", name: "Soho Modern Chair", desc: "A stylish and comfortable chair with mid-century modern design.", url: SHOP + "soho-modern-chair" }
+      ]
+    },
+
+    chair: {
+      title: "Chair",
+      sub: "Collection",
+      intro: "Discover a diverse range of stylish chairs, each designed to enhance your living room with timeless appeal.",
+      items: [
+        { name: "Armchair",      img: "images/chair/armchair.png",      url: SHOP + "armchair" },
+        { name: "Barrel Chair",  img: "images/chair/barrel-chair.png",  url: SHOP + "barrel-chair" },
+        { name: "Dining Chair",  img: "images/chair/dining-chair.png",  url: SHOP + "dining-chair" },
+        { name: "Modern Chair",  img: "images/chair/modern-chair.png",  url: SHOP + "modern-chair" },
+        { name: "Swivel Chair",  img: "images/chair/swivel-chair.png",  url: SHOP + "swivel-chair" },
+        { name: "Ottoman Chair", img: "images/chair/ottoman-chair.png", url: SHOP + "ottoman-chair" }
+      ],
+      feature: {
+        photo: "images/chair/lounge-scene.jpg",
+        tag: "Furniture/Chair",
+        title: "Reclining Lounge Chairs",
+        text: "The Lounge Chair is designed to provide ultimate comfort and relaxation, making it the perfect addition to any living room. Its deep, plush cushions and wide armrests offer a cozy spot to unwind after a long day.",
+        materialLabel: "Material",
+        material: "High-density foam cushions, fabric or leather upholstery, sturdy wooden frame.",
+        url: SHOP + "reclining-lounge-chair"
+      }
+    },
+
+    bedroom: {
+      title: "Bedroom",
+      products: [
+        { name: "Milas", img: "images/bedroom/milas.jpg", dim: "240L, 244W, 111H",
+          features: ["Headboard in warm-toned fabrics", "High density foam", "Sturdy wooden frame"],
+          swatches: ["#c9a58a", "#7d3b2b", "#b87a4b"], url: SHOP + "milas-bed" },
+        { name: "Bergama", img: "images/bedroom/bergama.jpg", dim: "231L, 302W, 116H",
+          features: ["Dark brown leather bed", "Elegant metal legs", "Comfortable sleeping space"],
+          swatches: ["#5b4035", "#b5532e", "#c4a98a"], url: SHOP + "bergama-bed" }
+      ]
+    },
+
+    table: {
+      title: "Table",
+      intro: "These side tables offer a variety of styles and materials to suit different living room designs.",
+      feature: {
+        img: "images/table/modern-coffee-table.jpg",
+        title: "Modern Coffee Table",
+        text: "A timeless wooden table that adds a touch of nature with its rich, earthy tones. Solid wood construction, rustic finish, perfect for placing books.",
+        url: SHOP + "modern-coffee-table"
+      },
+      products: [
+        { name: "Round Side Table", dim: "20L, 20W, 24H", img: "images/table/round-side-table.png",
+          desc: "A marble look side table with a gentle speckle that adds depth and luxury.", url: SHOP + "round-side-table" },
+        { name: "End Table", dim: "18L, 18W, 22H", img: "images/table/end-table.png",
+          desc: "A contemporary leather side table with a sturdy metal base.", url: SHOP + "end-table" },
+        { name: "Side Table", dim: "18L, 18W, 22H", img: "images/table/side-table.png",
+          desc: "A minimalist side table with a glazed finish, perfect for modern living rooms.", url: SHOP + "side-table" }
+      ]
+    },
+
+    dining: {
+      title: "Dining Room",
+      products: [
+        { name: "Extendia", img: "images/dining/extendia.jpg", dim: "210/260L, 105W, 80H",
+          features: ["Natural wood", "Extendable table", "Sturdy wooden frame"],
+          swatches: ["#8a5a3c", "#c9a58a", "#4b3328"], url: SHOP + "extendia-dining-table" },
+        { name: "Otello", img: "images/dining/otello.jpg", dim: "230L, 110W, 80H",
+          features: ["Natural wood chair", "Upholstered in neatly knotted fabric", "662 knots for each 1 cm² fabric"],
+          swatches: ["#6e5540", "#8f8c86", "#3a2a20"], url: SHOP + "otello-dining-set" }
+      ]
+    },
+
+    diningRight: {
+      title: "Dining Room",
+      intro: "Our dining table collection features diverse styles and materials to complement any dining space.",
+      feature: {
+        img: "images/dining/modern-dining-table.jpg",
+        title: "Modern Dining Table",
+        text: "Modern ceramic dining table with elegant lines, sophisticated design, and exceptional quality. Stable tabletop on distinctive carbon steel legs creates a floating art piece, adding signature style to any interior.",
+        url: SHOP + "modern-dining-table"
+      },
+      products: [
+        { name: "Ebony Dining Chair", dim: "50L, 56W, 77H", img: "images/dining/ebony-chair.png",
+          desc: "Dark walnut wood frame decorated with an elegant and contemporary design.", url: SHOP + "ebony-dining-chair" },
+        { name: "Dining Chair", dim: "55L, 56W, 80H", img: "images/dining/dining-chair.png",
+          desc: "Natural walnut dining chair features a sleek and contemporary design.", url: SHOP + "dining-chair-walnut" },
+        { name: "Verano Dining Chair", dim: "60L, 60W, 80H", img: "images/dining/verano-chair.png",
+          desc: "The frame is made of black wood, and the seat is upholstered in soft, light grey fabric.", url: SHOP + "verano-dining-chair" }
+      ]
+    },
+
+    back: {
+      heading: "Make It Yours",
+      text: "Explore the full new arrivals collection and place your order online.",
+      buttonLabel: "Shop New Arrivals",
+      buttonUrl: "https://divanoelite.com/collections/new-arrivals"
+    }
+  };
+
+  /* =====================================================================
+     PAGE TEMPLATES
+     ===================================================================== */
+  const c = catalogue;
+
+  function tCover() {
+    const k = c.cover;
+    return `<div class="page cover"><div class="pi">
+      <div class="photo"><img src="${k.img}" alt="" onerror="this.style.display='none'" /></div>
+      <div class="shade"></div>
+      <div class="date">${k.date}</div>
+      <div class="text">
+        <div class="living">${k.room.toUpperCase()}</div>
+        <h1>${k.title}</h1>
+        <div class="rule"></div>
+        <p class="lead">${k.lead}</p>
+      </div>
+      <div class="bubbles">${k.bubbles.map(b => `<span style="background-image:url('${b}')"></span>`).join("")}</div>
+    </div></div>`;
+  }
+
+  function tIndex() {
+    const k = c.index;
+    return `<div class="page index"><div class="pi">
+      <div class="head"><div class="brand">${k.brand}</div><div class="rule"></div></div>
+      <div class="cols">
+        ${k.cols.map(col => `
+          <div class="col">
+            <img src="${col.img}" alt="${col.title}" onerror="this.style.display='none'" />
+            <div class="shade"></div>
+            <div class="num">${col.num}</div>
+            <div class="txt"><h3>${col.title}</h3><p>${col.text}</p></div>
+          </div>`).join("")}
+      </div>
+    </div></div>`;
+  }
+
+  function tSofa(n) {
+    const k = c.sofa;
+    return `<div class="page sofa"><div class="pi">
+      <div class="left">
+        <div class="top">
+          <div class="dots"><i></i><i></i><i></i></div>
+          <h2>${k.title}</h2>
+        </div>
+        ${k.items.map(it => `
+          <div class="item">
+            <div class="name"><b>${it.n}</b>${it.name}</div>
+            <div class="box">${it.desc}</div>
+            <a class="cart" href="${it.url}" target="_blank" rel="noopener" aria-label="Shop ${it.name}">&#128722;</a>
+            <div style="clear:both"></div>
+          </div>`).join("")}
+      </div>
+      <div class="right">
+        <img src="${k.photo}" alt="Sofa scene" onerror="this.style.display='none'" />
+        ${k.hotspots.map(h => `<span class="hot" style="left:${h.x}%;top:${h.y}%">${h.n}</span>`).join("")}
+      </div>
+      <span class="pno ${n % 2 === 0 ? "l" : "r"}">${n}</span>
+    </div></div>`;
+  }
+
+  function tChair(n) {
+    const k = c.chair, f = k.feature;
+    return `<div class="page chair"><div class="pi">
+      <div class="left">
+        <div class="head">
+          <h2>${k.title}</h2>
+          <div class="sub">${k.sub.toUpperCase()}</div>
+          <p class="intro">${k.intro}</p>
+        </div>
+        <div class="grid">
+          ${k.items.map(it => `
+            <a class="it" href="${it.url}" target="_blank" rel="noopener">
+              <div class="pic"><img src="${it.img}" alt="${it.name}" onerror="this.style.display='none'" /><span class="cart">&#128722;</span></div>
+              <div class="n">${it.name}</div>
+            </a>`).join("")}
+        </div>
+      </div>
+      <div class="right">
+        <div class="hero"><img src="${f.photo}" alt="${f.title}" onerror="this.style.display='none'" /></div>
+        <div class="below">
+          <span class="tag">${f.tag}</span>
+          <h3>${f.title}</h3>
+          <p>${f.text}</p>
+          <div class="label">${f.materialLabel}</div>
+          <div class="mat">${f.material}</div>
+          <a class="shop-btn" href="${f.url}" target="_blank" rel="noopener">Shop on Website &rarr;</a>
+        </div>
+      </div>
+      <span class="pno ${n % 2 === 0 ? "l" : "r"}">${n}</span>
+    </div></div>`;
+  }
+
+  function tSplit(room, n) {
+    return `<div class="page split"><div class="pi">
+      <div class="ttl">${room.title}</div>
+      <div class="ttl-rule"></div>
+      ${room.products.map(p => `
+        <div class="prod">
+          <div class="pic"><img src="${p.img}" alt="${p.name}" onerror="this.style.display='none'" /></div>
+          <div class="info">
+            <div class="bar">${p.name}</div>
+            <div class="lbl">Dimension</div>
+            <div class="val">${p.dim}</div>
+            <div class="lbl">Feature</div>
+            <ul>${p.features.map(f => `<li>${f}</li>`).join("")}</ul>
+            <div class="lbl">Material</div>
+            <div class="swatches">${p.swatches.map(col => `<i style="background:${col}"></i>`).join("")}</div>
+            <a class="view" href="${p.url}" target="_blank" rel="noopener">View product &rarr;</a>
+          </div>
+        </div>`).join("")}
+      <span class="pno ${n % 2 === 0 ? "l" : "r"}">${n}</span>
+    </div></div>`;
+  }
+
+  function tGallery(room, n) {
+    const f = room.feature;
+    return `<div class="page gallery"><div class="pi">
+      <div class="ttl">${room.title}</div>
+      <p class="intro">${room.intro}</p>
+      <a class="feature" href="${f.url}" target="_blank" rel="noopener">
+        <img src="${f.img}" alt="${f.title}" onerror="this.style.display='none'" />
+        <div class="cap"><h4>${f.title}</h4><p>${f.text}</p></div>
+      </a>
+      <div class="row">
+        ${room.products.map(p => `
+          <a class="sm" href="${p.url}" target="_blank" rel="noopener">
+            <div class="pic"><img src="${p.img}" alt="${p.name}" onerror="this.style.display='none'" /></div>
+            <div class="under"></div>
+            <h5>${p.name}</h5>
+            <div class="dim">${p.dim}</div>
+            <p>${p.desc}</p>
+          </a>`).join("")}
+      </div>
+      <span class="pno ${n % 2 === 0 ? "l" : "r"}">${n}</span>
+    </div></div>`;
+  }
+
+  function tBack() {
+    const k = c.back;
+    return `<div class="page back"><div class="pi">
+      <h2>${k.heading}</h2>
+      <p>${k.text}</p>
+      <a class="btn" href="${k.buttonUrl}" target="_blank" rel="noopener">${k.buttonLabel}</a>
+    </div></div>`;
+  }
+
+  /* ---------- Assemble the book ---------- */
+  const book = document.getElementById("book");
+  book.innerHTML = [
+    tCover(),
+    tIndex(),
+    tSofa(3),
+    tChair(4),
+    tSplit(c.bedroom, 5),
+    tGallery(c.table, 6),
+    tSplit(c.dining, 7),
+    tGallery(c.diningRight, 8),
+    tBack()
+  ].join("");
+
+  /* ---------- Flip engine ---------- */
+  const pageFlip = new St.PageFlip(book, {
+    width: 520,
+    height: 780,
+    size: "stretch",
+    minWidth: 280,
+    maxWidth: 1100,
+    minHeight: 420,
+    maxHeight: 1000,
+    showCover: true,
+    usePortrait: true,
+    drawShadow: true,
+    maxShadowOpacity: 0.5,
+    flippingTime: 900,
+    useMouseEvents: true,
+    swipeDistance: 30,
+    showPageCorners: true,
+    disableFlipByClick: false
+  });
+
+  pageFlip.loadFromHTML(document.querySelectorAll("#book .page"));
+
+  /* ---------- Controls ---------- */
+  const total = pageFlip.getPageCount();
+  const counter = document.getElementById("counter");
+  const dotsEl = document.getElementById("dots");
+  const prevBtn = document.getElementById("prevBtn");
+  const nextBtn = document.getElementById("nextBtn");
+
+  for (let i = 0; i < total; i++) {
+    const d = document.createElement("button");
+    d.className = "dot";
+    d.setAttribute("aria-label", `Go to page ${i + 1}`);
+    d.addEventListener("click", () => pageFlip.turnToPage(i));
+    dotsEl.appendChild(d);
+  }
+
+  function updateUI(index) {
+    counter.textContent = `Page ${index + 1} of ${total}`;
+    [...dotsEl.children].forEach((d, i) => d.classList.toggle("active", i === index));
+    prevBtn.disabled = index === 0;
+    nextBtn.disabled = index >= total - 1;
+  }
+
+  pageFlip.on("flip", e => updateUI(e.data));
+  prevBtn.addEventListener("click", () => pageFlip.flipPrev());
+  nextBtn.addEventListener("click", () => pageFlip.flipNext());
+  document.addEventListener("keydown", e => {
+    if (e.key === "ArrowRight") pageFlip.flipNext();
+    if (e.key === "ArrowLeft") pageFlip.flipPrev();
+  });
+
+  updateUI(0);
+</script>
+</body>
+</html>
